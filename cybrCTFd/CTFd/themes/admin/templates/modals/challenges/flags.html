@@ -1,0 +1,56 @@
+<table id="flagsboard" class="table table-striped">
+	<thead>
+	<tr>
+		<td class="text-center"><b>Type</b></td>
+		<td class="text-center"><b>Flag</b></td>
+		<td class="text-center"><b>Single-Use</b></td>
+		<td class="text-center"><b>Expired</b></td>
+		<td class="text-center"><b>Settings</b></td>
+	</tr>
+	</thead>
+	<tbody>
+	{% for flag in flags %}
+		<tr name="{{ flag.id }}">
+			<td class="text-center">{{ flag.type }}</td>
+			<td class="text-break">
+				<pre class="flag-content">{{ flag.content }}</pre>
+			</td>
+			<td class="text-center">
+				{% if flag.onetime %}
+					<span id="onetime-color" style="color: green;">
+					<i class="fas fa-check" id="onetime-content"></i>
+					</span>
+				{% else %}
+					<span id="onetime-color" style="color: red;">
+					<i class="fas fa-times" id="onetime-content"></i>
+					</span>
+				{% endif %}
+			<td class="text-center">
+				{% if flag.onetime %}
+					{% if flag.expired %}
+                                        <span id="expired-color" style="color: red;">
+                                        <i class="fas fa-dizzy" id="expired-content"></i>
+                                        </span>
+					{% else %}
+                                        <span id="expired-color" style="color: green;">
+                                        <i class="fas fa-smile" id="expired-content"></i>
+                                        </span>
+					{% endif %}
+				{% else %}
+					<span id="expired-color" style="color: black;">
+					<i class="" id="expired-content">N/A</i>
+					</span
+				{% endif %}
+			</td>
+			<td class="text-center">
+				<i role="button" class="btn-fa fas fa-edit edit-flag" flag-id="{{ flag.id }}" flag-type="{{ flag.type }}"></i>
+				<i role="button" class="btn-fa fas fa-times delete-flag" flag-id="{{ flag.id }}"></i>
+			</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+<div class="col-md-12">
+	<button id="flag-add-button" class="btn btn-success d-inline-block float-right">Create Flag</button>
+</div>
