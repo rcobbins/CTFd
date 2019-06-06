@@ -10,6 +10,10 @@
 		<option value="">Case Sensitive</option>
 		<option value="case_insensitive" {% if data %}selected{% endif %}>Case Insensitive</option>
 	</select>
+        <select name="onetime">
+                <option value="False">Perpetual Flag</option>
+                <option value="True" {% if onetime %}selected{% endif %}>Single-Use Flag</option>
+        </select>
 </div>
 <input type="hidden" name="type" value="regex">
 <input type="hidden" name="id" value="{{ id }}">

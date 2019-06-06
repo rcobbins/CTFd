@@ -96,6 +96,8 @@ def upgrade():
     sa.Column('type', sa.String(length=80), nullable=True),
     sa.Column('content', sa.Text(), nullable=True),
     sa.Column('data', sa.Text(), nullable=True),
+    sa.Column('onetime', sa.Boolean(), nullable=True),
+    sa.Column('expired', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['challenge_id'], ['challenges.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

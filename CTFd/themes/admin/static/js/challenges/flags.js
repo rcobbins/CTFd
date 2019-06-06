@@ -97,11 +97,63 @@ $(document).ready(function() {
                 $(row)
                   .find(".flag-content")
                   .text(response.data.content);
+                if (response.data.onetime) {
+                  $(row)
+                    .find("#onetime-content")
+                    .attr("class", "fas fa-check");
+                  $(row)
+                    .find("#onetime-color")
+                    .attr("style", "color: green;");
+                  $(row)
+                    .find("#expired-content")
+                    .text("");
+                  if(response.data.expired) {
+                    $(row)
+                      .find("#expired-content")
+                      .attr("class", "fas fa-dizzy");
+                    $(row)
+                      .find("#expired-color")
+                      .attr("style", "color: red;");
+                  }
+                  else {
+                    $(row)
+                      .find("#expired-content")
+                      .attr("class", "fas fa-smile");
+                    $(row)
+                      .find("#expired-color")
+                      .attr("style", "color: green;");
+                  }
+                }
+                else {
+                  $(row)
+                    .find("#onetime-content")
+                    .attr("class", "fas fa-times");
+                  $(row)
+                    .find("#onetime-color")
+                    .attr("style", "color: red;");
+                  $(row)
+                    .find("#expired-content")
+                    .attr("class", "");
+                  $(row)
+                    .find("#expired-content")
+                    .text("N/A");
+                  $(row)
+                    .find("#expired-color")
+                    .attr("style", "color: black;");
+                }
                 $("#edit-flags").modal("toggle");
               }
             });
         });
         $("#edit-flags").modal();
+        if ($('#onetime').val() === 'False') 
+                $('#divExp').hide();
+        $('#onetime').change(function() {
+                if ($('#onetime').val() === 'True') 
+                        $('#divExp').show();
+                else 
+                        $('#divExp').hide();
+        });
       });
     });
   });
