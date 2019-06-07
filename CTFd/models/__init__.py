@@ -489,6 +489,10 @@ class Teams(db.Model):
     hidden = db.Column(db.Boolean, default=False)
     banned = db.Column(db.Boolean, default=False)
 
+    # Relationship for Users
+    captain_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"))
+    captain = db.relationship("Users", foreign_keys=[captain_id])
+
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, **kwargs):
