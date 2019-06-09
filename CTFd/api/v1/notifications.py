@@ -1,9 +1,11 @@
 from flask import current_app, request
 from flask_restplus import Namespace, Resource
-from CTFd.models import db, Notifications
+from CTFd.models import db, Notifications, Users
 from CTFd.schemas.notifications import NotificationSchema
 
 from CTFd.utils.decorators import admins_only
+from CTFd.utils import email
+import json
 
 notifications_namespace = Namespace(
     "notifications", description="Endpoint to retrieve Notifications"
@@ -34,6 +36,9 @@ class NotificantionList(Resource):
         db.session.commit()
 
         response = schema.dump(result.data)
+        users = Users.query.all()
+        for user in users:
+                email.sendmail(user.email, response.data['content'])
         current_app.events_manager.publish(data=response.data, type="notification")
 
         return {"success": True, "data": response.data}

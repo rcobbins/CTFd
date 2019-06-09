@@ -1,6 +1,32 @@
-version: '2'
-
+version: "2"
 services:
+  letsencrypt:
+    image: linuxserver/letsencrypt
+    container_name: letsencrypt
+    cap_add:
+      - NET_ADMIN #do we need this?
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - URL=techjam.io
+      - SUBDOMAINS=www
+      - VALIDATION=http
+      - EMAIL=andy.givens@cyberark.com
+#     - DHLEVEL=2048 #optional
+#     - ONLY_SUBDOMAINS=false #optional
+#     - EXTRA_DOMAINS=extradomains #optional
+#     - STAGING=false #optional
+    volumes:
+      - /srv/letsencrypt/config:/config
+    ports:
+      - 443:443
+      - 80:80
+    restart: unless-stopped
+    networks:
+        default:
+        internal:
+
   ctfd:
     build: .
     user: root
@@ -16,11 +42,12 @@ services:
       - ACCESS_LOG=-
       - ERROR_LOG=-
     volumes:
-      - .data/CTFd/logs:/var/log/CTFd
-      - .data/CTFd/uploads:/var/uploads
+      - /srv/CTFd/logs:/var/log/CTFd
+      - /srv/CTFd/uploads:/var/uploads
       - .:/opt/CTFd:ro
     depends_on:
       - db
+      - letsencrypt
     networks:
         default:
         internal:
@@ -33,7 +60,7 @@ services:
       - MYSQL_USER=ctfd
       - MYSQL_PASSWORD=ctfd
     volumes:
-      - .data/mysql:/var/lib/mysql
+      - /srv/mysql:/var/lib/mysql
     networks:
         internal:
     # This command is required to set important mariadb defaults
@@ -41,7 +68,7 @@ services:
 
   cache:
     image: redis:4
-    restart: always
+    restart: unless-stopped
     volumes:
     - .data/redis:/data
     networks:
@@ -50,4 +77,4 @@ services:
 networks:
     default:
     internal:
-        internal: true
+      internal: true

@@ -14,6 +14,7 @@ def sendmail(addr, text):
     if provider == "smtp":
         return smtp.sendmail(addr, text)
     if provider == "mailgun":
+        print ("Sending mail with Mailgun")
         return mailgun.sendmail(addr, text)
     return False, "No mail settings configured"
 
