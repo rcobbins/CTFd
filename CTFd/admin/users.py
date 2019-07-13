@@ -2,7 +2,7 @@ from flask import render_template, request
 from CTFd.utils import get_config
 from CTFd.utils.decorators import admins_only
 from CTFd.utils.modes import TEAMS_MODE
-from CTFd.models import db, Users, Challenges, Tracking
+from CTFd.models import db, Users, Challenges, Tracking, Teams, RFP
 from CTFd.admin import admin
 from CTFd.utils.helpers import get_errors
 
@@ -42,6 +42,8 @@ def users_listing():
                 .order_by(Users.id.asc())
                 .all()
             )
+        for i in range(0, len(users)):
+            print(users[i])
         return render_template(
             "admin/users/users.html",
             users=users,
@@ -56,12 +58,15 @@ def users_listing():
     page_start = results_per_page * (page - 1)
     page_end = results_per_page * (page - 1) + results_per_page
 
-    users = Users.query.order_by(Users.id.asc()).slice(page_start, page_end).all()
+    users = Users.query.order_by(Users.team_id.asc()).slice(page_start, page_end).all()
     count = db.session.query(db.func.count(Users.id)).first()[0]
     pages = int(count / results_per_page) + (count % results_per_page > 0)
-
+    teams = []
+    for i in range(0, len(users)):
+        team = Teams.query.filter_by(id=users[i].team_id).first()
+        teams.append(team)
     return render_template(
-        "admin/users/users.html", users=users, pages=pages, curr_page=page
+        "admin/users/users.html", users=users, teams=teams, pages=pages, curr_page=page
     )
 
 
@@ -79,6 +84,7 @@ def users_detail(user_id):
 
     # Get the user's solves
     solves = user.get_solves(admin=True)
+    rfps = user.get_rfps(admin=True)
 
     # Get challenges that the user is missing
     if get_config("user_mode") == TEAMS_MODE:
@@ -110,6 +116,7 @@ def users_detail(user_id):
     return render_template(
         "admin/users/user.html",
         solves=solves,
+        rfps=rfps,
         user=user,
         addrs=addrs,
         score=score,

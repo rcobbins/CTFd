@@ -4,6 +4,7 @@ from CTFd.models import db, Users, Teams
 from CTFd.schemas.teams import TeamSchema
 from CTFd.schemas.submissions import SubmissionSchema
 from CTFd.schemas.awards import AwardSchema
+from CTFd.schemas.rfps import RFPSchema
 from CTFd.cache import clear_standings
 from CTFd.utils.decorators.visibility import check_account_visibility
 from CTFd.utils.config.visibility import accounts_visible, scores_visible
@@ -248,6 +249,33 @@ class TeamSolves(Resource):
 
         return {"success": True, "data": response.data}
 
+
+@teams_namespace.route("/<team_id>/rfps")
+@teams_namespace.param("team_id", "Team ID or 'me'")
+class TeamRFPs(Resource):
+    def get(self, team_id):
+        if team_id == "me":
+            if not authed():
+                abort(403)
+            team = get_current_team()
+            rfps = team.get_rfps(admin=True)
+        else:
+            if accounts_visible() is False or scores_visible() is False:
+                abort(404)
+            team = Teams.query.filter_by(id=team_id).first_or_404()
+
+            if (team.banned or team.hidden) and is_admin() is False:
+                abort(404)
+            rfps = team.get_rfps(admin=is_admin())
+
+        view = "admin" if is_admin() else "user"
+        schema = RFPSchema(view=view, many=True)
+        response = schema.dump(rfps)
+
+        if response.errors:
+            return {"success": False, "errors": response.errors}, 400
+
+        return {"success": True, "data": response.data}
 
 @teams_namespace.route("/<team_id>/fails")
 @teams_namespace.param("team_id", "Team ID or 'me'")

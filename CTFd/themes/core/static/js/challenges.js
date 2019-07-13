@@ -47,13 +47,30 @@ function updateChalWindow(obj) {
 
         $("#challenge-window").append(template.render(challenge_data));
 
-        $(".challenge-solves").click(function(e) {
+/*        $(".challenge-solves").click(function(e) {
           getsolves($("#challenge-id").val());
         });
         $(".nav-tabs a").click(function(e) {
           e.preventDefault();
           $(this).tab("show");
-        });
+        });*/
+
+        if (obj.type == "rfp") {
+          var temp = document.getElementById("submission-input");
+          var textarea = document.createElement('textarea');
+          textarea.id = temp.id;
+          textarea.name = temp.name;
+          textarea.style = temp.style;
+          textarea.className = temp.className;
+          textarea.rows = 10;
+          textarea.columns = 50;
+          var parent = temp.parentNode;
+          parent.removeChild(temp);
+          parent.appendChild(textarea);
+          $("#submit-key").css("margin-top","217px");
+          $(".challenge-value").remove();
+          $(".challenge-solves").remove();
+        }        
 
         // Handle modal toggling
         $("#challenge-window").on("hide.bs.modal", function(event) {
@@ -67,13 +84,19 @@ function updateChalWindow(obj) {
 
         $("#submit-key").click(function(e) {
           e.preventDefault();
-          $("#submit-key").addClass("disabled-button");
-          $("#submit-key").prop("disabled", true);
-          window.challenge.submit(function(data) {
-            renderSubmissionResponse(data);
-            loadchals(function() {
-              marksolves();
-            });
+          ezq({
+            title: "Submit RFP Response?",
+            body: "Once you have submitted a response for RFP questions, there is no going back to edit them.  Are you satisfied with the answer you've provided?",
+            success: function() {
+              $("#submit-key").addClass("disabled-button");
+              $("#submit-key").prop("disabled", true);
+              window.challenge.submit(function(data) {
+                renderSubmissionResponse(data);
+                loadchals(function() {
+                  marksolves();
+                });
+              });
+            }
           });
         });
 
@@ -147,7 +170,7 @@ function renderSubmissionResponse(response, cb) {
     setTimeout(function() {
       answer_input.removeClass("wrong");
     }, 3000);
-  } else if (result.status === "correct") {
+  } else if (result.status === "correct" || result.status === "rfp") {
     // Challenge Solved
     result_notification.addClass(
       "alert alert-success alert-dismissable text-center"
@@ -219,6 +242,21 @@ function marksolves(cb) {
       cb();
     }
   });
+
+  $.get(script_root + "/api/v1/" + user_mode + "/me/rfps", function(
+    response
+  ) {
+    var solves = response.data;
+    for (var i = solves.length - 1; i >= 0; i--) {
+      var id = solves[i].challenge_id;
+      var btn = $('button[value="' + id + '"]');
+      btn.addClass("solved-challenge");
+      btn.prepend("<i class='fas fa-check corner-button-check'></i>");
+    }
+    if (cb) {
+      cb();
+    }
+  });
 }
 
 function load_user_solves(cb) {
@@ -236,8 +274,20 @@ function load_user_solves(cb) {
         cb();
       }
     });
-  } else {
-    cb();
+    $.get(script_root + "/api/v1/" + user_mode + "/me/rfps", function(
+      response
+    ) {
+      var solves = response.data;
+
+      for (var i = solves.length - 1; i >= 0; i--) {
+        var chal_id = solves[i].challenge_id;
+        user_solves.push(chal_id);
+      }
+      if (cb) {
+        cb();
+      }
+    });
+   } else { cb();
   }
 }
 
@@ -311,13 +361,13 @@ function loadchals(cb) {
 
       if (user_solves.indexOf(chalinfo.id) == -1) {
         var chalbutton = $(
-          "<button class='btn btn-dark challenge-button w-100 text-truncate pt-3 pb-3 mb-2' value='{0}'></button>".format(
+          "<button style='white-space: normal;' class='btn btn-dark challenge-button w-100 text-truncate pt-3 pb-3 mb-2' value='{0}'></button>".format(
             chalinfo.id
           )
         );
       } else {
         var chalbutton = $(
-          "<button class='btn btn-dark challenge-button solved-challenge w-100 text-truncate pt-3 pb-3 mb-2' value='{0}'><i class='fas fa-check corner-button-check'></i></button>".format(
+          "<button style='white-space: normal;' class='btn btn-dark challenge-button solved-challenge w-100 text-truncate pt-3 pb-3 mb-2' value='{0}'><i class='fas fa-check corner-button-check'></i></button>".format(
             chalinfo.id
           )
         );
@@ -331,7 +381,9 @@ function loadchals(cb) {
       }
 
       chalbutton.append(chalheader);
-      chalbutton.append(chalscore);
+      if (chalinfo.type != "rfp") {
+        chalbutton.append(chalscore);
+      }
       chalwrap.append(chalbutton);
 
       $("#" + catid + "-row")

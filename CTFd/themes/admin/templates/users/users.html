@@ -54,9 +54,7 @@
 						</td>
 						<td class="d-md-table-cell d-lg-table-cell text-center"><b>Email</b>
 						</td>
-						<td class=""><b>Website</b>
-						</td>
-						<td class=""><b>Country</b>
+						<td class="text-center"><b>Team</b>
 						</td>
 						<td class="text-center"><b>Admin</b>
 						</td>
@@ -90,16 +88,8 @@
 								<a href="mailto:{{ user.email }}" target="_blank">{{ user.email | truncate(32) }}</a>
 							{% endif %}
 						</td>
-						<td class="team-website text-center">
-							{% if user.website %}
-								<a href="{{ user.website }}" target="_blank">
-									<i class="btn-fa fas fa-external-link-alt" data-toggle="tooltip" data-placement="top"
-									   title="{{ user.website }}" aria-hidden="true"></i>
-								</a>
-							{% endif %}
-						</td>
-						<td class="team-country" value="{{ user.country if user.country is not none }}">
-							<span>{% if user.country %}{{ lookup_country_code(user.country) }}{% endif %}</span>
+						<td class="team-name" value="{{teams[loop.index0].name}}">
+							<span>{{teams[loop.index0].name}}</span>
 						</td>
 						<td class="team-admin d-md-table-cell d-lg-table-cell text-center" value="{{ user.type }}">
 							{% if user.type == 'admin' %}

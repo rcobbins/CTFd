@@ -274,6 +274,10 @@ class Users(db.Model):
         return self.get_fails(admin=False)
 
     @property
+    def rfps(self):
+        return self.get_rfps(admin=False)
+
+    @property
     def awards(self):
         return self.get_awards(admin=False)
 
@@ -292,6 +296,14 @@ class Users(db.Model):
             dt = datetime.datetime.utcfromtimestamp(freeze)
             solves = solves.filter(Solves.date < dt)
         return solves.all()
+
+    def get_rfps(self, admin=False):
+        rfps = RFP.query.filter_by(user_id=self.id)
+        freeze = get_config("freeze")
+        if freeze and admin is False:
+            dt = datetime.datetime.utcfromtimestamp(freeze)
+            rfps = rfps.filter(RFP.date < dt)
+        return rfps.all()
 
     def get_fails(self, admin=False):
         fails = Fails.query.filter_by(user_id=self.id)
@@ -318,6 +330,14 @@ class Users(db.Model):
             .filter(Users.id == self.id)
         )
 
+        rfp_score = db.func.sum(RFP.score).label("rfp_score")
+        rfp_user = (
+            db.session.query(RFP.user_id, rfp_score)
+            .join(Users, RFP.user_id == Users.id)
+            .join(Challenges, RFP.challenge_id == Challenges.id)
+            .filter(Users.id == self.id)
+        )
+
         award_score = db.func.sum(Awards.value).label("award_score")
         award = db.session.query(award_score).filter_by(user_id=self.id)
 
@@ -331,9 +351,18 @@ class Users(db.Model):
 
         user = user.group_by(Solves.user_id).first()
         award = award.first()
+        rfp_user = rfp_user.first()
 
-        if user and award:
+        if user and award and rfp_user:
+            return int(user.score or 0) + int(award.award_score or 0) + int(rfp_user.rfp_score or 0)
+        elif user and award:
             return int(user.score or 0) + int(award.award_score or 0)
+        elif user and rfp_user:
+            return int(user.score or 0) + int(rfp_user.rfp_score or 0)
+        elif award and rfp_user:
+            return int(award.award_score or 0) + int(rfp_user.rfp_score or 0)
+        elif rfp_user:
+            return int(rfp_user.rfp_score or 0)
         elif user:
             return int(user.score or 0)
         elif award:
@@ -469,6 +498,10 @@ class Teams(db.Model):
         return self.get_fails(admin=False)
 
     @property
+    def rfps(self):
+        return self.get_rfps(admin=False)
+
+    @property
     def awards(self):
         return self.get_awards(admin=False)
 
@@ -493,6 +526,20 @@ class Teams(db.Model):
             solves = solves.filter(Solves.date < dt)
 
         return solves.all()
+
+    def get_rfps(self, admin=False):
+        member_ids = [member.id for member in self.members]
+
+        rfps = RFP.query.filter(RFP.user_id.in_(member_ids)).order_by(
+            RFP.date.asc()
+        )
+
+        freeze = get_config("freeze")
+        if freeze and admin is False:
+            dt = datetime.datetime.utcfromtimestamp(freeze)
+            rfps = rfps.filter(RFP.date < dt)
+
+        return rfps.all()
 
     def get_fails(self, admin=False):
         member_ids = [member.id for member in self.members]
@@ -687,6 +734,38 @@ class Solves(Submissions):
 
     __mapper_args__ = {"polymorphic_identity": "correct"}
 
+class RFP(Submissions):
+    __tablename__ = "rfp"
+    __table_args__ = (
+        db.UniqueConstraint("challenge_id", "user_id"),
+        db.UniqueConstraint("challenge_id", "team_id"),
+        {},
+    )
+    id = db.Column(
+        None, db.ForeignKey("submissions.id", ondelete="CASCADE"), primary_key=True
+    )
+    score = db.Column(db.Integer)
+    reviewed = db.Column(db.Boolean)
+    challenge_id = column_property(
+        db.Column(db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE")),
+        Submissions.challenge_id,
+    )
+    user_id = column_property(
+        db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE")),
+        Submissions.user_id,
+    )
+    team_id = column_property(
+        db.Column(db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE")),
+        Submissions.team_id,
+    )
+
+    user = db.relationship("Users", foreign_keys="RFP.user_id", lazy="select")
+    team = db.relationship("Teams", foreign_keys="RFP.team_id", lazy="select")
+    challenge = db.relationship(
+        "Challenges", foreign_keys="RFP.challenge_id", lazy="select"
+    )
+
+    __mapper_args__ = {"polymorphic_identity": "rfp"}
 
 class Fails(Submissions):
     __mapper_args__ = {"polymorphic_identity": "incorrect"}

@@ -4,6 +4,7 @@ from CTFd.models import (
     db,
     Users,
     Solves,
+    RFP,
     Awards,
     Tracking,
     Unlocks,
@@ -21,6 +22,7 @@ from CTFd.utils.config.visibility import accounts_visible, scores_visible
 
 from CTFd.schemas.submissions import SubmissionSchema
 from CTFd.schemas.awards import AwardSchema
+from CTFd.schemas.rfps import RFPSchema
 from CTFd.schemas.users import UserSchema
 
 
@@ -176,6 +178,33 @@ class UserSolves(Resource):
 
         view = "user" if not is_admin() else "admin"
         response = SubmissionSchema(view=view, many=True).dump(solves)
+
+        if response.errors:
+            return {"success": False, "errors": response.errors}, 400
+
+        return {"success": True, "data": response.data}
+
+@users_namespace.route("/<user_id>/rfps")
+@users_namespace.param("user_id", "User ID or 'me'")
+class TeamRFPs(Resource):
+    def get(self, user_id):
+        if user_id == "me":
+            if not authed():
+                abort(403)
+            user = get_current_user()
+            rfps = user.get_rfps(admin=True)
+        else:
+            if accounts_visible() is False or scores_visible() is False:
+                abort(404)
+            user = Users.query.filter_by(id=user_id).first_or_404()
+
+            if (user.banned or user.hidden) and is_admin() is False:
+                abort(404)
+            rfps = user.get_rfps(admin=is_admin())
+
+        view = "admin" if is_admin() else "user"
+        schema = RFPSchema(view=view, many=True)
+        response = schema.dump(rfps)
 
         if response.errors:
             return {"success": False, "errors": response.errors}, 400

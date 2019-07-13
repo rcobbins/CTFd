@@ -79,6 +79,7 @@ def teams_detail(team_id):
 
     # Get Solves for all members
     solves = team.get_solves(admin=True)
+    rfps = team.get_rfps(admin=True)
     fails = team.get_fails(admin=True)
     awards = team.get_awards(admin=True)
     score = team.get_score(admin=True)
@@ -103,6 +104,7 @@ def teams_detail(team_id):
         score=score,
         place=place,
         solves=solves,
+        rfps=rfps,
         fails=fails,
         missing=missing,
         awards=awards,

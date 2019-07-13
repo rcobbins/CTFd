@@ -2,7 +2,7 @@ from flask import request
 from flask_restplus import Namespace, Resource
 
 from CTFd.cache import clear_standings
-from CTFd.models import db, Submissions
+from CTFd.models import db, Submissions, RFP
 from CTFd.schemas.submissions import SubmissionSchema
 from CTFd.utils.decorators import admins_only
 
@@ -37,7 +37,6 @@ class SubmissionsList(Resource):
         response = schema.load(req)
         if response.errors:
             return {"success": False, "errors": response.errors}, 400
-
         db.session.add(response.data)
         db.session.commit()
 
@@ -74,4 +73,17 @@ class Submission(Resource):
         # Delete standings cache
         clear_standings()
 
+        return {"success": True}
+
+@submissions_namespace.route("/scorerfp/<rfp_id>")
+@submissions_namespace.param("rfp_id", "A RFP ID")
+class ScoreRFP(Resource):
+    @admins_only
+    def post(self, rfp_id):
+        req = request.get_json()
+        rfp = RFP.query.filter_by(id=rfp_id).first_or_404()
+        rfp.reviewed = True
+        rfp.score = req["score"]
+        db.session.commit()
+        db.session.close()
         return {"success": True}

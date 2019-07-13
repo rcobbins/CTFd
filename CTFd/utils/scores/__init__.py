@@ -1,7 +1,7 @@
 from sqlalchemy.sql.expression import union_all
 
 from CTFd.cache import cache
-from CTFd.models import db, Solves, Awards, Challenges
+from CTFd.models import db, Solves, Awards, Challenges, RFP
 from CTFd.utils.dates import unix_time_to_utc
 from CTFd.utils import get_config
 from CTFd.utils.modes import get_model
@@ -42,6 +42,17 @@ def get_standings(count=None, admin=False):
         .group_by(Awards.account_id)
     )
 
+    rfp_scores = (
+        db.session.query(
+           RFP.account_id.label("account_id"),
+           db.func.sum(RFP.score).label("score"),
+           db.func.max(RFP.id).label("id"),
+           db.func.max(RFP.date).label("date"),
+        )
+        .filter(RFP.score != 0)
+        .group_by(RFP.account_id)
+    )
+
     """
     Filter out solves and awards that are before a specific time point.
     """
@@ -53,7 +64,7 @@ def get_standings(count=None, admin=False):
     """
     Combine awards and solves with a union. They should have the same amount of columns
     """
-    results = union_all(scores, awards).alias("results")
+    results = union_all(scores, awards, rfp_scores).alias("results")
 
     """
     Sum each of the results by the team id to get their score.

@@ -1,0 +1,302 @@
+./admin/__init__.py:3:    render_template,
+./admin/__init__.py-4-    request,
+./admin/__init__.py-5-    redirect,
+--
+./admin/__init__.py:9:    render_template_string,
+./admin/__init__.py-10-    send_file,
+./admin/__init__.py-11-)
+--
+./admin/__init__.py:77:            return render_template_string(config_html)
+./admin/__init__.py-78-        abort(404)
+./admin/__init__.py-79-    elif request.method == "POST":
+--
+./admin/__init__.py:164:    return render_template(
+./admin/__init__.py-165-        "admin/config.html", database_tables=database_tables, themes=themes, **configs
+./admin/__init__.py-166-    )
+--
+./admin/__init__.py:188:    return render_template("admin/reset.html")
+./admin/notifications.py:1:from flask import render_template
+./admin/notifications.py-2-from CTFd.utils.decorators import admins_only
+./admin/notifications.py-3-from CTFd.models import Notifications
+--
+./admin/notifications.py:11:    return render_template("admin/notifications.html", notifications=notifs)
+./admin/pages.py:1:from flask import render_template, request
+./admin/pages.py-2-from CTFd.utils.decorators import admins_only
+./admin/pages.py-3-from CTFd.models import Pages
+--
+./admin/pages.py:13:    return render_template("admin/pages.html", pages=pages)
+./admin/pages.py-14-
+./admin/pages.py-15-
+--
+./admin/pages.py:19:    return render_template("admin/editor.html")
+./admin/pages.py-20-
+./admin/pages.py-21-
+--
+./admin/pages.py:28:    return render_template("page.html", content=markdown(page.data.content))
+./admin/pages.py-29-
+./admin/pages.py-30-
+--
+./admin/pages.py:38:        return render_template("page.html", content=markdown(page.content))
+./admin/pages.py-39-
+./admin/pages.py-40-    if request.method == "GET" and page_op == "create":
+./admin/pages.py:41:        return render_template("admin/editor.html")
+./admin/pages.py-42-
+./admin/pages.py:43:    return render_template("admin/editor.html", page=page)
+./admin/scoreboard.py:1:from flask import render_template
+./admin/scoreboard.py-2-from CTFd.utils.decorators import admins_only
+./admin/scoreboard.py-3-from CTFd.admin import admin
+--
+./admin/scoreboard.py:11:    return render_template("admin/scoreboard.html", standings=standings)
+./admin/statistics.py:1:from flask import render_template
+./admin/statistics.py-2-from CTFd.utils.decorators import admins_only
+./admin/statistics.py-3-from CTFd.utils.updates import update_check
+--
+./admin/statistics.py:66:    return render_template(
+./admin/statistics.py-67-        "admin/statistics.html",
+./admin/statistics.py-68-        team_count=teams_registered,
+./admin/submissions.py:1:from flask import render_template, request
+./admin/submissions.py-2-from CTFd.utils.decorators import admins_only
+./admin/submissions.py-3-from CTFd.models import Challenges, Submissions
+--
+./admin/submissions.py:44:    return render_template(
+./admin/submissions.py-45-        "admin/submissions.html",
+./admin/submissions.py-46-        submissions=submissions,
+./admin/challenges.py:1:from flask import current_app as app, render_template, render_template_string, url_for
+./admin/challenges.py-2-from CTFd.utils.decorators import admins_only
+./admin/challenges.py-3-from CTFd.utils import binary_type
+--
+./admin/challenges.py:15:    return render_template("admin/challenges/challenges.html", challenges=challenges)
+./admin/challenges.py-16-
+./admin/challenges.py-17-
+--
+./admin/challenges.py:40:        update_j2 = render_template_string(tpl, challenge=challenge)
+./admin/challenges.py-41-
+./admin/challenges.py-42-    update_script = url_for(
+--
+./admin/challenges.py:45:    return render_template(
+./admin/challenges.py-46-        "admin/challenges/challenge.html",
+./admin/challenges.py-47-        update_template=update_j2,
+--
+./admin/challenges.py:59:    return render_template("admin/challenges/new.html")
+./admin/teams.py:1:from flask import render_template, request
+./admin/teams.py-2-from CTFd.utils.decorators import admins_only
+./admin/teams.py-3-from CTFd.models import db, Teams, Challenges, Tracking
+--
+./admin/teams.py:43:        return render_template(
+./admin/teams.py-44-            "admin/teams/teams.html",
+./admin/teams.py-45-            teams=teams,
+--
+./admin/teams.py:60:    return render_template(
+./admin/teams.py-61-        "admin/teams/teams.html", teams=teams, pages=pages, curr_page=page
+./admin/teams.py-62-    )
+--
+./admin/teams.py:68:    return render_template("admin/teams/new.html")
+./admin/teams.py-69-
+./admin/teams.py-70-
+--
+./admin/teams.py:99:    return render_template(
+./admin/teams.py-100-        "admin/teams/team.html",
+./admin/teams.py-101-        team=team,
+./admin/users.py:1:from flask import render_template, request
+./admin/users.py-2-from CTFd.utils import get_config
+./admin/users.py-3-from CTFd.utils.decorators import admins_only
+--
+./admin/users.py:45:        return render_template(
+./admin/users.py-46-            "admin/users/users.html",
+./admin/users.py-47-            users=users,
+--
+./admin/users.py:63:    return render_template(
+./admin/users.py-64-        "admin/users/users.html", users=users, pages=pages, curr_page=page
+./admin/users.py-65-    )
+--
+./admin/users.py:71:    return render_template("admin/users/new.html")
+./admin/users.py-72-
+./admin/users.py-73-
+--
+./admin/users.py:110:    return render_template(
+./admin/users.py-111-        "admin/users/user.html",
+./admin/users.py-112-        solves=solves,
+./challenges.py:1:from flask import render_template, Blueprint
+./challenges.py-2-from CTFd.utils.decorators import (
+./challenges.py-3-    during_ctf_time_only,
+--
+./challenges.py:33:    return render_template(
+./challenges.py-34-        "challenges.html", infos=infos, errors=errors, start=int(start), end=int(end)
+./challenges.py-35-    )
+./errors.py:1:from flask import render_template
+./errors.py-2-
+./errors.py-3-
+--
+./errors.py:6:    return render_template("errors/404.html", error=error.description), 404
+./errors.py-7-
+./errors.py-8-
+--
+./errors.py:11:    return render_template("errors/403.html", error=error.description), 403
+./errors.py-12-
+./errors.py-13-
+--
+./errors.py:16:    return render_template("errors/500.html"), 500
+./errors.py-17-
+./errors.py-18-
+--
+./errors.py:21:    return render_template("errors/502.html", error=error.description), 502
+./scoreboard.py:1:from flask import render_template, Blueprint
+./scoreboard.py-2-
+./scoreboard.py-3-from CTFd.utils import config
+--
+./scoreboard.py:15:    return render_template(
+./scoreboard.py-16-        "scoreboard.html",
+./scoreboard.py-17-        standings=standings,
+./teams.py:1:from flask import render_template, request, redirect, url_for, Blueprint
+./teams.py-2-from CTFd.models import db, Teams
+./teams.py-3-from CTFd.utils.decorators import authed_only, ratelimit
+--
+./teams.py:39:    return render_template("teams/teams.html", teams=teams, pages=pages, curr_page=page)
+./teams.py-40-
+./teams.py-41-
+--
+./teams.py:48:        return render_template("teams/join_team.html")
+./teams.py-49-    if request.method == "POST":
+./teams.py-50-        teamname = request.form.get("name")
+--
+./teams.py:66:            return render_template("teams/join_team.html", errors=errors)
+./teams.py-67-
+./teams.py-68-
+--
+./teams.py:74:        return render_template("teams/new_team.html")
+./teams.py-75-    elif request.method == "POST":
+./teams.py-76-        teamname = request.form.get("name")
+--
+./teams.py:89:            return render_template("teams/new_team.html", errors=errors)
+./teams.py-90-
+./teams.py-91-        team = Teams(name=teamname, password=passphrase, captain_id=user.id)
+--
+./teams.py:107:        return render_template("teams/team_enrollment.html")
+./teams.py-108-
+./teams.py-109-    team_id = user.team_id
+--
+./teams.py:118:    return render_template(
+./teams.py-119-        "teams/private.html",
+./teams.py-120-        solves=solves,
+--
+./teams.py:144:        return render_template("teams/public.html", team=team, errors=errors)
+./teams.py-145-
+./teams.py:146:    return render_template(
+./teams.py-147-        "teams/public.html",
+./teams.py-148-        solves=solves,
+./users.py:1:from flask import request, render_template, Blueprint
+./users.py-2-
+./users.py-3-from CTFd.models import Users
+--
+./users.py:31:    return render_template("users/users.html", users=users, pages=pages, curr_page=page)
+./users.py-32-
+./users.py-33-
+--
+./users.py:46:    return render_template(
+./users.py-47-        "users/private.html",
+./users.py-48-        solves=solves,
+--
+./users.py:62:    return render_template("users/public.html", user=user)
+./utils/decorators/visibility.py:1:from flask import request, abort, redirect, url_for, render_template
+./utils/decorators/visibility.py-2-from CTFd.utils import get_config
+./utils/decorators/visibility.py-3-from CTFd.utils.user import is_admin, authed
+--
+./utils/decorators/visibility.py:25:                render_template("errors/403.html", error="Scores are currently hidden"),
+./utils/decorators/visibility.py-26-                403,
+./utils/decorators/visibility.py-27-            )
+./utils/initialization/__init__.py:1:from flask import request, session, redirect, url_for, abort, render_template
+./utils/initialization/__init__.py-2-from werkzeug.wsgi import DispatcherMiddleware
+./utils/initialization/__init__.py-3-from CTFd.models import db, Tracking
+--
+./utils/initialization/__init__.py:180:                            render_template(
+./utils/initialization/__init__.py-181-                                "errors/403.html",
+./utils/initialization/__init__.py-182-                                error="You have been banned from this CTF",
+--
+./utils/initialization/__init__.py:189:                            render_template(
+./utils/initialization/__init__.py-190-                                "errors/403.html",
+./utils/initialization/__init__.py-191-                                error="Your team has been banned from this CTF",
+./views.py:3:    render_template,
+./views.py-4-    request,
+./views.py-5-    redirect,
+--
+./views.py:132:        return render_template("setup.html", nonce=session.get("nonce"))
+./views.py-133-    return redirect(url_for("views.static_html"))
+./views.py-134-
+--
+./views.py:139:    return render_template("notifications.html", notifications=notifications)
+./views.py-140-
+./views.py-141-
+--
+./views.py:153:    return render_template(
+./views.py-154-        "settings.html",
+./views.py-155-        name=name,
+--
+./views.py:189:        return render_template("page.html", content=markdown(page.content))
+./views.py-190-
+./views.py-191-
+./auth.py:3:    render_template,
+./auth.py-4-    request,
+./auth.py-5-    redirect,
+--
+./auth.py:48:            return render_template(
+./auth.py-49-                "confirm.html", errors=["Your confirmation link has expired"]
+./auth.py-50-            )
+--
+./auth.py:52:            return render_template(
+./auth.py-53-                "confirm.html", errors=["Your confirmation token is invalid"]
+./auth.py-54-            )
+--
+./auth.py:85:            return render_template(
+./auth.py-86-                "confirm.html",
+./auth.py-87-                user=user,
+--
+./auth.py:92:            return render_template("confirm.html", user=user)
+./auth.py-93-
+./auth.py-94-
+--
+./auth.py:103:            return render_template(
+./auth.py-104-                "reset_password.html", errors=["Your link has expired"]
+./auth.py-105-            )
+--
+./auth.py:107:            return render_template(
+./auth.py-108-                "reset_password.html", errors=["Your reset token is invalid"]
+./auth.py-109-            )
+--
+./auth.py:112:            return render_template("reset_password.html", mode="set")
+./auth.py-113-        if request.method == "POST":
+./auth.py-114-            user = Users.query.filter_by(name=name).first_or_404()
+--
+./auth.py:132:            return render_template(
+./auth.py-133-                "reset_password.html",
+./auth.py-134-                errors=["Email could not be sent due to server misconfiguration"],
+--
+./auth.py:138:            return render_template(
+./auth.py-139-                "reset_password.html",
+./auth.py-140-                errors=[
+--
+./auth.py:147:        return render_template(
+./auth.py-148-            "reset_password.html",
+./auth.py-149-            errors=[
+--
+./auth.py:153:    return render_template("reset_password.html")
+./auth.py-154-
+./auth.py-155-
+--
+./auth.py:200:            return render_template(
+./auth.py-201-                "register.html",
+./auth.py-202-                errors=errors,
+--
+./auth.py:249:        return render_template("register.html", errors=errors)
+./auth.py-250-
+./auth.py-251-
+--
+./auth.py:284:                return render_template("login.html", errors=errors)
+./auth.py-285-        else:
+./auth.py-286-            # This user just doesn't exist
+--
+./auth.py:290:            return render_template("login.html", errors=errors)
+./auth.py-291-    else:
+./auth.py-292-        db.session.close()
+./auth.py:293:        return render_template("login.html", errors=errors)
+./auth.py-294-
+./auth.py-295-

@@ -8,6 +8,7 @@ from CTFd.models import (
     Hints,
     Flags,
     Solves,
+    RFP,
     Fails,
     ChallengeFiles as ChallengeFilesModel,
 )
@@ -319,7 +320,6 @@ class ChallengeAttempt(Resource):
                 challenge = Challenges.query.filter_by(id=challenge_id).first_or_404()
                 chal_class = get_chal_class(challenge.type)
                 status, message = chal_class.attempt(challenge, request)
-
                 return {
                     "success": True,
                     "data": {
@@ -405,8 +405,12 @@ class ChallengeAttempt(Resource):
             account_id=user.account_id, challenge_id=challenge_id
         ).first()
 
+        rfps = RFP.query.filter_by(
+            account_id=user.account_id, challenge_id=challenge_id
+        ).first()
+
         # Challenge not solved yet
-        if not solves:
+        if not solves and not rfps:
             # Hit max attempts
             max_tries = challenge.max_attempts
             if max_tries and fails >= max_tries > 0:
@@ -428,17 +432,22 @@ class ChallengeAttempt(Resource):
                         user=user, team=team, challenge=challenge, request=request
                     )
                     clear_standings()
-
                 log(
                     "submissions",
                     "[{date}] {name} submitted {submission} with kpm {kpm} [CORRECT]",
                     submission=request_data["submission"].encode("utf-8"),
                     kpm=kpm,
                 )
-                return {
-                    "success": True,
-                    "data": {"status": "correct", "message": message},
-                }
+                if chal_class.name is "rfp":
+                    return {
+                        "success": True,
+                        "data": {"status": "rfp", "message": message},
+                    }
+                else:
+                    return {
+                        "success": True,
+                        "data": {"status": "correct", "message": message},
+                    }
             else:  # The challenge plugin says the input is wrong
                 if ctftime() or current_user.is_admin():
                     chal_class.fail(
@@ -476,7 +485,7 @@ class ChallengeAttempt(Resource):
                         "success": True,
                         "data": {"status": "incorrect", "message": message},
                     }
-
+        
         # Challenge already solved
         else:
             log(

@@ -1,6 +1,6 @@
 from flask import render_template, request
 from CTFd.utils.decorators import admins_only
-from CTFd.models import Challenges, Submissions
+from CTFd.models import Challenges, Submissions, RFP
 from CTFd.utils.modes import get_model
 from CTFd.admin import admin
 
@@ -40,11 +40,24 @@ def submissions_listing(submission_type):
         .slice(page_start, page_end)
         .all()
     )
-
-    return render_template(
-        "admin/submissions.html",
-        submissions=submissions,
-        page_count=page_count,
-        curr_page=curr_page,
-        type=submission_type,
-    )
+    if submission_type == 'rfp':
+        for i in reversed(range(len(submissions))):
+            rfp = RFP.query.filter_by(id=submissions[i].id).first()
+            print(rfp.reviewed)
+            if (rfp.reviewed):
+                del submissions[i]
+        return render_template(
+            "admin/reviewrfp.html",
+            submissions=submissions,
+            page_count=page_count,
+            curr_page=curr_page,
+            type=submission_type
+        )
+    else:
+        return render_template(
+            "admin/submissions.html",
+            submissions=submissions,
+            page_count=page_count,
+            curr_page=curr_page,
+            type=submission_type,
+        )

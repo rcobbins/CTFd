@@ -1,6 +1,8 @@
 from flask_restplus import Namespace, Resource
 
-from CTFd.models import Solves, Awards, Teams
+from sqlalchemy import and_
+
+from CTFd.models import Solves, Awards, Teams, RFP
 from CTFd.cache import cache, make_cache_key
 from CTFd.utils.scores import get_standings
 from CTFd.utils import get_config
@@ -75,15 +77,18 @@ class ScoreboardDetail(Resource):
 
         solves = Solves.query.filter(Solves.account_id.in_(team_ids))
         awards = Awards.query.filter(Awards.account_id.in_(team_ids))
+        rfps = RFP.query.filter(and_(RFP.account_id.in_(team_ids), RFP.reviewed.is_(True)))
 
         freeze = get_config("freeze")
 
         if freeze:
             solves = solves.filter(Solves.date < unix_time_to_utc(freeze))
             awards = awards.filter(Awards.date < unix_time_to_utc(freeze))
+            rfps = RFP.query.filter(RFP.date < unix_time_to_utc(freeze))
 
         solves = solves.all()
         awards = awards.all()
+        rfps = rfps.all()
 
         for i, team in enumerate(team_ids):
             response[i + 1] = {
@@ -113,6 +118,18 @@ class ScoreboardDetail(Resource):
                             "user_id": award.user_id,
                             "value": award.value,
                             "date": isoformat(award.date),
+                        }
+                    )
+            for rfp in rfps:
+                if rfp.account_id == team:
+                    response[i + 1]["solves"].append(
+                        {
+                            "challenge_id": rfp.challenge_id,
+                            "account_id": rfp.account_id,
+                            "team_id": rfp.team_id,
+                            "user_id": rfp.user_id,
+                            "value": rfp.score,
+                            "date": isoformat(rfp.date),
                         }
                     )
             response[i + 1]["solves"] = sorted(

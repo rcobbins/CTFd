@@ -50,10 +50,20 @@ function solves_graph() {
     ];
 
     var layout = {
-      title: "Solve Counts",
+      title: false,
+      margin: {
+        l: 50,
+        r: 50,
+        b: 150,
+        t: 20,
+        pad: 4
+      },
       annotations: annotations,
       xaxis: {
-        title: "Challenge Name"
+        title: "Challenge Name",
+        tickfont: {
+          size: 10
+        }
       },
       yaxis: {
         title: "Amount of Solves"
@@ -133,7 +143,8 @@ function category_breakdown_graph() {
     ];
 
     var layout = {
-      title: "Category Breakdown"
+      title: "Category Breakdown",
+      showlegend: false
     };
 
     $("#categories-pie-graph").empty();
@@ -180,9 +191,20 @@ function solve_percentages_graph() {
       ];
 
       var layout = {
-        title: "Solve Percentages per Challenge",
+        title: false,
+        margin: {
+          l: 80,
+          r: 80,
+          b: 150,
+          t: 20,
+          pad: 4
+        },
         xaxis: {
-          title: "Challenge Name"
+          title: "Challenge Name",
+          automargin: true,
+          tickfont: {
+            size: 10
+          },
         },
         yaxis: {
           title: "Percentage of {0} (%)".format(

@@ -1,6 +1,6 @@
 from flask import request, render_template, Blueprint
 
-from CTFd.models import Users
+from CTFd.models import Users, Teams
 from CTFd.utils.decorators import authed_only
 from CTFd.utils import config
 from CTFd.utils.user import get_current_user
@@ -26,7 +26,6 @@ def listing():
         .slice(page_start, page_end)
         .all()
     )
-
     pages = int(count / results_per_page) + (count % results_per_page > 0)
     return render_template("users/users.html", users=users, pages=pages, curr_page=page)
 

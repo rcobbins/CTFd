@@ -136,6 +136,7 @@ def public(team_id):
     team = Teams.query.filter_by(id=team_id, banned=False, hidden=False).first_or_404()
     solves = team.get_solves()
     awards = team.get_awards()
+    rfps = team.get_rfps()
 
     place = team.place
     score = team.score
@@ -146,6 +147,7 @@ def public(team_id):
     return render_template(
         "teams/public.html",
         solves=solves,
+        rfps=rfps,
         awards=awards,
         team=team,
         score=score,

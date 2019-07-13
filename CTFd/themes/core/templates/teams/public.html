@@ -86,7 +86,8 @@
 				</div>
 			</div>
 
-			{% if solves %}
+			{% if solves or rfps %}
+				{% if solves %}
 				<div id="keys-pie-graph" class="w-50 mr-0 pr-0 float-left d-none d-md-block d-lg-block">
 					<div class="text-center">
 						<i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
@@ -98,6 +99,7 @@
 					</div>
 				</div>
 				<br class="clearfix">
+				{% endif %}
 				<div id="score-graph" class="w-100 float-right d-none d-md-block d-lg-block">
 					<div class="text-center">
 						<i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
@@ -155,6 +157,37 @@
 						</table>
 					</div>
 				</div>
+				{% if rfps %}
+				<div class="row">
+					<div class="col-md-12">
+						<h3>RFP Solves</h3>
+						<table class="table table-striped">
+							<thead>
+							<tr>
+								<td><b>RFP</b></td>
+								<td><b>Value</b></td>
+								<td><b>Time</b></td>
+							</tr>
+							</thead>
+							<tbody>
+							{% for rfp in rfps %}
+								<tr>
+									<td>
+										<a href="{{ url_for('challenges.listing') }}#{{ rfp.challenge.name }}">{{ rfp.challenge.name }}</a>
+									</td>
+									<td>{{ rfp.score }}</td>
+									<td class="solve-time">
+										<script>
+                                            document.write(moment("{{ rfp.date | isoformat }}").local().format('MMMM Do, h:mm:ss A'))
+										</script>
+									</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				{% endif %}			
 			{% else %}
 				<div class="text-center"><h3 class="spinner-error">No solves yet</h3></div>
 			{% endif %}

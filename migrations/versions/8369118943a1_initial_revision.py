@@ -214,6 +214,22 @@ def upgrade():
     sa.UniqueConstraint('challenge_id', 'team_id'),
     sa.UniqueConstraint('challenge_id', 'user_id')
     )
+
+    op.create_table('rfp',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('challenge_id', sa.Integer(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('team_id', sa.Integer(), nullable=True),
+    sa.Column('score'), sa.Integer(), default=0),
+    sa.Column('reviewed'), sa.Boolean(), default=False),
+    sa.ForeignKeyConstraint(['challenge_id'], ['challenges.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['id'], ['submissions.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['team_id'], ['teams.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('challenge_id', 'team_id'),
+    sa.UniqueConstraint('challenge_id', 'user_id')
+    )    
     # ### end Alembic commands ###
 
 
