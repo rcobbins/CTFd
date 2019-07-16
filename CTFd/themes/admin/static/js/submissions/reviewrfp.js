@@ -45,6 +45,13 @@ $(document).ready(function() {
         if (response.success) {
           td_row.remove();
         }
+        else {
+          ezal({
+            title: "Already reviewed",
+            body: "Somebody already scored this one. Refresh your browser to get an updated list.",
+            button: "OK"
+         });
+       }
       });
     }
   });

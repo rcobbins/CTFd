@@ -82,8 +82,11 @@ class ScoreRFP(Resource):
     def post(self, rfp_id):
         req = request.get_json()
         rfp = RFP.query.filter_by(id=rfp_id).first_or_404()
-        rfp.reviewed = True
-        rfp.score = req["score"]
-        db.session.commit()
-        db.session.close()
-        return {"success": True}
+        if not rfp.reviewed:
+            rfp.reviewed = True
+            rfp.score = req["score"]
+            db.session.commit()
+            db.session.close()
+            return {"success": True}
+        else:
+            return {"sucess": False}

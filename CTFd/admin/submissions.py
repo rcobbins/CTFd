@@ -31,6 +31,7 @@ def submissions_listing(submission_type):
             Submissions.account_id,
             Submissions.date,
             Challenges.name.label("challenge_name"),
+            Challenges.category.label("challenge_category"),
             Model.name.label("team_name"),
         )
         .filter_by(**filters)

@@ -37,7 +37,17 @@
 							<pre class="mb-0">{{ sub.provided }}</pre>
 						</td>
 						<td class="text-center">
-							<input style="text-align:right; width: 30px;" type="text" class="rfp-score" id="{{ sub.id }}" />
+							<select class="rfp-score" id="{{ sub.id }}">
+							{% if 'Partner' in sub.challenge_category %}
+								<option value="0">0</option>
+								<option value="25">25</option>
+								<option value-"50">50</option>
+							{% else %}
+								<option value="0">0</option>
+                                                                <option value="10">10</option>
+                                                                <option value-"20">20</option>
+							{% endif %}
+							</select>
 						</td>
 						<td class="text-center">
 							<span class="rfp-score-submission" data-toggle="tooltip"
