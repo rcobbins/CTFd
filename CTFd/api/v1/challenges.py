@@ -63,7 +63,7 @@ class ChallengeList(Resource):
             Challenges.query.filter(
                 and_(Challenges.state != "hidden", Challenges.state != "locked")
             )
-            .order_by(Challenges.value)
+            .order_by(Challenges.id)
             .all()
         )
 

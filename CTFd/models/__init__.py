@@ -400,6 +400,17 @@ class Users(db.Model):
             .group_by(Awards.user_id)
         )
 
+        rfp_scores = (
+            db.session.query(
+                RFP.account_id.label("account_id"),
+                db.func.sum(RFP.score).label("score"),
+                db.func.max(RFP.id).label("id"),
+                db.func.max(RFP.date).label("date"),
+            )
+            .filter(RFP.score != 0)
+            .group_by(RFP.account_id)
+        )        
+
         if not admin:
             freeze = Configs.query.filter_by(key="freeze").first()
             if freeze and freeze.value:
@@ -408,7 +419,7 @@ class Users(db.Model):
                 scores = scores.filter(Solves.date < freeze)
                 awards = awards.filter(Awards.date < freeze)
 
-        results = union_all(scores, awards).alias("results")
+        results = union_all(scores, awards, rfp_scores).alias("results")
 
         sumscores = (
             db.session.query(
@@ -605,6 +616,17 @@ class Teams(db.Model):
             .group_by(Awards.team_id)
         )
 
+        rfp_scores = (
+            db.session.query(
+                RFP.account_id.label("team_id"),
+                db.func.sum(RFP.score).label("score"),
+                db.func.max(RFP.id).label("id"),
+                db.func.max(RFP.date).label("date"),
+            )
+            .filter(RFP.score != 0)
+            .group_by(RFP.account_id)
+        )
+
         if not admin:
             freeze = Configs.query.filter_by(key="freeze").first()
             if freeze and freeze.value:
@@ -613,7 +635,7 @@ class Teams(db.Model):
                 scores = scores.filter(Solves.date < freeze)
                 awards = awards.filter(Awards.date < freeze)
 
-        results = union_all(scores, awards).alias("results")
+        results = union_all(scores, awards, rfp_scores).alias("results")
 
         sumscores = (
             db.session.query(

@@ -84,20 +84,32 @@ function updateChalWindow(obj) {
 
         $("#submit-key").click(function(e) {
           e.preventDefault();
-          ezq({
-            title: "Submit RFP Response?",
-            body: "Once you have submitted a response for RFP questions, there is no going back to edit them.  Are you satisfied with the answer you've provided?",
-            success: function() {
-              $("#submit-key").addClass("disabled-button");
-              $("#submit-key").prop("disabled", true);
-              window.challenge.submit(function(data) {
-                renderSubmissionResponse(data);
-                loadchals(function() {
-                  marksolves();
+          if (obj.type == "rfp") {          
+            ezq({
+              title: "Submit RFP Response?",
+              body: "Once you have submitted a response for RFP questions, there is no going back to edit them.  Are you satisfied with the answer you've provided?",
+              success: function() {
+                $("#submit-key").addClass("disabled-button");
+                $("#submit-key").prop("disabled", true);
+                window.challenge.submit(function(data) {
+                  renderSubmissionResponse(data);
+                  loadchals(function() {
+                    marksolves();
+                  });
                 });
+              }
+            });
+          }
+          else {
+            $("#submit-key").addClass("disabled-button");
+            $("#submit-key").prop("disabled", true);
+            window.challenge.submit(function(data) {
+              renderSubmissionResponse(data);
+              loadchals(function() {
+                marksolves();
               });
-            }
-          });
+            });
+          }
         });
 
         $("#submission-input").keyup(function(event) {

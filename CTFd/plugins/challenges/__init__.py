@@ -137,8 +137,10 @@ class CTFdStandardChallenge(BaseChallenge):
         submission = data["submission"].strip()
         flags = Flags.query.filter_by(challenge_id=challenge.id).all()
         for flag in flags:
-            if flag.onetime is True and flag.expired is True:
-                return False, "This flag has already been used"
+            print(submission + "    " + flag.content)
+            print(str(flag.onetime) + "   " + str(flag.expired))
+            #if flag.onetime is True and flag.expired is True:
+            #    return False, "This flag has already been used"
             if get_flag_class(flag.type).compare(flag, submission):
                 if flag.onetime is True:
                     if flag.expired is True:

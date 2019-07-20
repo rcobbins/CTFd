@@ -9,8 +9,8 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/New_York
-      - URL=test.techjam.io
-#      - SUBDOMAINS=www,test
+      - URL=techjam.io
+      - SUBDOMAINS=www
       - VALIDATION=http
       - EMAIL=andy.givens@cyberark.com
 #     - DHLEVEL=2048 #optional
